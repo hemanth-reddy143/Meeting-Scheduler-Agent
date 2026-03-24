@@ -1,13 +1,20 @@
-class AvailabilityManager:
+class AvailabilityChecker:
     def __init__(self):
-        self.schedules = {}
+        # Example: predefined unavailable times
+        self.busy_schedule = {
+            "Alice": [(10, 11)],
+            "Bob": [(11, 12)],
+            "Charlie": []
+        }
 
-    def add_user(self, user):
-        if user not in self.schedules:
-            self.schedules[user] = []
+    def check_availability(self, participants, start, end):
+        unavailable = []
 
-    def add_meeting(self, user, meeting):
-        self.schedules[user].append(meeting)
+        for person in participants:
+            if person in self.busy_schedule:
+                for busy_start, busy_end in self.busy_schedule[person]:
+                    if not (end <= busy_start or start >= busy_end):
+                        unavailable.append(person)
+                        break
 
-    def get_meetings(self, user):
-        return self.schedules.get(user, [])
+        return unavailable

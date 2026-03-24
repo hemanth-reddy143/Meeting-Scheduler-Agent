@@ -1,21 +1,30 @@
-from meeting import Meeting
-from conflict_resolver import has_conflict
+from availability import AvailabilityChecker
+from conflict_resolver import ConflictResolver
 
-class SchedulerAgent:
-    def __init__(self, availability_manager):
-        self.availability_manager = availability_manager
+class Scheduler:
+    def __init__(self):
+        self.availability_checker = AvailabilityChecker()
+        self.conflict_resolver = ConflictResolver()
 
-    def schedule_meeting(self, title, participants, start_time, end_time):
-        for user in participants:
-            meetings = self.availability_manager.get_meetings(user)
-            if has_conflict(meetings, start_time, end_time):
-                print(f"❌ Conflict detected for {user}")
-                return None
+    def schedule_meeting(self, title, start, end, participants):
+        unavailable = self.availability_checker.check_availability(participants, start, end)
 
-        meeting = Meeting(title, participants, start_time, end_time)
+        if unavailable:
+            suggestions = self.conflict_resolver.suggest_time_slots(start, end)
+            return {
+                "status": "conflict",
+                "unavailable": unavailable,
+                "suggestions": suggestions
+            }
 
-        for user in participants:
-            self.availability_manager.add_meeting(user, meeting)
+        meeting = {
+            "title": title,
+            "start": start,
+            "end": end,
+            "participants": participants
+        }
 
-        print("✅ Meeting scheduled successfully")
-        return meeting
+        return {
+            "status": "success",
+            "meeting": meeting
+        }

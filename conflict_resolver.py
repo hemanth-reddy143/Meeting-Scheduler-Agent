@@ -1,5 +1,7 @@
-def has_conflict(existing_meetings, new_start, new_end):
-    for meeting in existing_meetings:
-        if not (new_end <= meeting.start_time or new_start >= meeting.end_time):
-            return True
-    return False
+class ConflictResolver:
+    def suggest_time_slots(self, start, end):
+        # Simple suggestions (example logic)
+        return [
+            f"{start + 1} - {end + 1}",
+            f"{start + 2} - {end + 2}"
+        ]
